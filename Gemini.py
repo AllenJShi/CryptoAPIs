@@ -6,13 +6,14 @@ import json
 import csv
 from datetime import datetime
 import os
+import pytz
 
 class Gemini:
     def __init__(self):
         self.urls, self.pairs = self.getUrls()
 
     def epoch2est(self, epoch):
-        return datetime.fromtimestamp(epoch/1000)
+        return datetime.fromtimestamp(epoch/1000,pytz.timezone("UTC"))
 
     def getAPI(self, url, pair):
         response = requests.get(url)
@@ -34,9 +35,10 @@ class Gemini:
         return urls,pairs
 
     def writer(self, df, pair):
-        header =  {0:"Time",1:"Open", 2:"High", 3:"Low", 4:"Close", 5:"Volume"}
+        header =  {0:"Epoch Time",1:"Open", 2:"High", 3:"Low", 4:"Close", 5:"Volume"}
         df = df.rename(columns = header)
-        df["Time"] = df["Time"].apply(lambda i : self.epoch2est(i))
+        df["Date (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2est(i).date())
+        df["Time (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2est(i).time())
         df.to_csv(".\\Gemini\\{}.csv".format(pair), index = False)
 
 temp = Gemini()

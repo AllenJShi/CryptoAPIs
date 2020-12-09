@@ -7,6 +7,7 @@ import csv
 from datetime import datetime
 import os
 import ast
+import pytz
 
 
 class Kraken:
@@ -15,20 +16,11 @@ class Kraken:
 
 
     def epoch2est(self, epoch):
-        return datetime.fromtimestamp(epoch)
+        return datetime.fromtimestamp(epoch,pytz.timezone("UTC"))
 
     def getAPI(self, url, pair):
         response = urlopen(url)
         text = response.read()
-        
-        # data = json.dumps(text.decode()).replace("'", '"')[1:-1]
-        # # print(type(data))
-        # x = bytes(data, encoding='utf-8')
-        # print((x))
-        # t=json.loads(x.decode('utf-8')) 
-        # print(type(t))
-        # # print(t)
-
         json_data = ast.literal_eval(json.dumps(text.decode()))
         dat = json.loads(json_data)
         tmp = dat["result"]
@@ -38,9 +30,10 @@ class Kraken:
 
 
     def writer(self, df, pair):
-        # header = {0:"Time",1:"Open", 2:"High", 3:"Low", 4:"Close", 5:"Volume"}
-        # df = df.rename(columns = header)
-        df[0] = df[0].apply(lambda i : self.epoch2est(i))
+        header = {0:"Epoch Time",1:"Open", 2:"High", 3:"Low", 4:"Close", 5:"VWAP",6:"Volume",7:"Count"}
+        df = df.rename(columns = header)
+        df["Date (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2est(i).date())
+        df["Time (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2est(i).time())
         df.to_csv(".\\Kraken\\{}.csv".format(pair), index = False)
 
     def getUrls(self):

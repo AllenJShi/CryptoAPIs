@@ -37,7 +37,7 @@ class Bittrex:
         """
         this method should create a csv file and store a list of price
         """
-        header = {"O":"Open", "H":"High", "L":"Low", "C":"Close", "V":"Volume", "T":"Time" ,"BV":"Book Value"}
+        header = {"O":"Open", "H":"High", "L":"Low", "C":"Close", "V":"Volume", "T":"Time" ,"BV":"Base Value"}
         df = pd.DataFrame(result)
         df = df.rename(columns = header)
         df.to_csv('.\\Bittrex\\{}-{}.csv'.format(pair[0],pair[1]), index = False)
