@@ -40,6 +40,9 @@ class Bittrex:
         header = {"O":"Open", "H":"High", "L":"Low", "C":"Close", "V":"Volume", "T":"Time" ,"BV":"Base Value"}
         df = pd.DataFrame(result)
         df = df.rename(columns = header)
+        df["Date (UTC)"] = df["Time"].apply(lambda i: i.split("T")[0])
+        df["Time (UTC)"] = df["Time"].apply(lambda i: i.split("T")[1])
+        df = df.drop(["Time"], axis = 1)
         df.to_csv('.\\Bittrex\\{}-{}.csv'.format(pair[0],pair[1]), index = False)
 
     def getUrls(self):

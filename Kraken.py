@@ -34,6 +34,7 @@ class Kraken:
         df = df.rename(columns = header)
         df["Date (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2est(i).date())
         df["Time (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2est(i).time())
+        df["Epoch Time"] = df["Epoch Time"].apply(lambda i : str(i))
         df.to_csv(".\\Kraken\\{}.csv".format(pair), index = False)
 
     def getUrls(self):

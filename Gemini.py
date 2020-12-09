@@ -39,6 +39,7 @@ class Gemini:
         df = df.rename(columns = header)
         df["Date (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2est(i).date())
         df["Time (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2est(i).time())
+        df["Epoch Time"] = df["Epoch Time"].apply(lambda i : str(i))
         df.to_csv(".\\Gemini\\{}.csv".format(pair), index = False)
 
 temp = Gemini()
