@@ -7,6 +7,7 @@ import csv
 from datetime import datetime, timedelta
 import ast
 import pytz
+import os
 
 
 class Binance:
@@ -56,6 +57,8 @@ class Binance:
     def writer(self, df, pair):
         df["Date (UTC)"] = (df["Epoch"]/1000).apply(lambda i : self.epoch2utc(i).date())
         df["Time (UTC)"] = (df["Epoch"]/1000).apply(lambda i : self.epoch2utc(i).time())
+        if not os.path.exists('Binance'):
+            os.makedirs('Binance')
         df.to_csv(self.path + "/Binance/{}.csv".format(pair) if self.path else ".\\Binance\\{}.csv".format(pair), index = False)
 
 

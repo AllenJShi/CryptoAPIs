@@ -7,10 +7,12 @@ import csv
 from datetime import datetime, timedelta
 import ast
 import pytz
+import os
 
 
 class Coinbase:
-    def __init__(self):
+    def __init__(self, path=None):
+        self.path = path
         self.pairs,self.starts,self.ends = self.reader()
         # self.starts_ends = self.str2dt()
         self.api = "https://api.pro.coinbase.com/products/{}/candles?start={}&end={}&granularity=3600"
@@ -29,7 +31,7 @@ class Coinbase:
 
 
     def reader(self):
-        df = pd.read_csv(".\\list\\Coinbase.csv", header = None, index_col = False)
+        df = pd.read_csv(self.path+"/list/Coinbase.csv" if self.path else ".\\list\\Coinbase.csv", header = None, index_col = False)
         pairs, starts, ends = df[0], df[1], df[2]
         pairs = [i.replace("/","-") for i in pairs]
         return pairs, starts, ends
@@ -73,7 +75,9 @@ class Coinbase:
         df["Date (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2utc(i).date())
         df["Time (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2utc(i).time())
         # df["Epoch Time"] = df["Epoch Time"].apply(lambda i : str(int(i)))
-        df.sort_values('Epoch Time',ascending=False).to_excel(".\\Coinbase\\{}.xlsx".format(pair), index = False)
+        if not os.path.exists('Coinbase'):
+            os.makedirs('Coinbase')
+        df.sort_values('Epoch Time',ascending=False).to_excel(self.path+"/Coinbase/{}.xlsx".format(pair) if self.path else ".\\Coinbase\\{}.xlsx".format(pair), index = False)
 
 
     def partition(self,start_end):
@@ -97,7 +101,8 @@ class Coinbase:
 
 
 
-tmp = Coinbase()
+if __name__ == '__main__':
+    tmp = Coinbase()
 
 
 # pairs = ["BCH-USD"]

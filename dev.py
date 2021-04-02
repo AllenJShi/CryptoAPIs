@@ -1,5 +1,5 @@
 from Binance import Binance
-
+from Coinbase import Coinbase
 
 import PySimpleGUI as sg 
 import os.path
@@ -16,7 +16,7 @@ file_list_column = [
     ],
     [
         sg.Listbox(
-            values=['Binance'], enable_events=True, size=(40, 20), key="-FILE LIST-"
+            values=['Binance','Bittrex','Coinbase','Gemini','Kraken'], enable_events=True, size=(40, 20), key="-FILE LIST-"
         )
     ]
 ]
@@ -52,6 +52,12 @@ while True:
             print("Execution Starts......")
             Binance(path = folder)
             print("Execution Completed!")
+        
+        elif action == "Coinbase":
+            print("Execution Starts......")
+            Coinbase(path = folder)
+            print("Execution Completed!")            
+        
         else:
             print("Error")
     else:
