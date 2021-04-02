@@ -62,7 +62,12 @@ def main():
     temp = Bittrex()
     for (url,pair) in zip(temp.urls, temp.pairs):
         result = temp.getPrice(url)
-        temp.parser(result, pair)
+        try:
+            temp.parser(result, pair)
+            print(pair)
+        except:
+            print(pair, "not found")
+            continue
         
 
 

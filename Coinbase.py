@@ -49,13 +49,13 @@ class Coinbase:
         return urls
 
     def request(self):
-        df_lst = []
         header =  {0:"Epoch Time",1:"Open", 2:"High", 3:"Low", 4:"Close", 5:"Volume"}
         for (start_end,pair) in zip(zip(self.starts, self.ends),self.pairs):
-            print(start_end)
+            # print(start_end)
+            df_lst = []
             batchlst = self.partition(start_end)
             urls = self.getUrl(pair,batchlst)
-            print(urls)
+            # print(urls)
             for url in urls:
                 re = requests.get(url)
                 data = re.json()
@@ -67,12 +67,13 @@ class Coinbase:
 
 
     def writer(self, df, pair):
-        # header =  {0:"Epoch Time",1:"Open", 2:"High", 3:"Low", 4:"Close", 5:"Volume"}
-        # df = df.rename(columns = header)
+        header =  {0:"Epoch Time",1:"Open", 2:"High", 3:"Low", 4:"Close", 5:"Volume"}
+        df = df.rename(columns = header)
+        # print(df.head())
         df["Date (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2utc(i).date())
         df["Time (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2utc(i).time())
         # df["Epoch Time"] = df["Epoch Time"].apply(lambda i : str(int(i)))
-        df.to_csv(".\\Coinbase\\{}.csv".format(pair), index = False)
+        df.sort_values('Epoch Time',ascending=False).to_excel(".\\Coinbase\\{}.xlsx".format(pair), index = False)
 
 
     def partition(self,start_end):
@@ -91,7 +92,7 @@ class Coinbase:
         convert = lambda x: (timedelta(hours = x*mini_nbatch)+d1).replace(tzinfo=pytz.timezone('US/Eastern'),microsecond=0).isoformat()
         mini_batch = [(convert(i), convert(i+1)) for i in np.arange(n_batch,dtype = np.float64)]
         mini_batch.append(((d2-timedelta(hours = reminder)).replace(tzinfo=pytz.timezone('US/Eastern'),microsecond=0).isoformat(), d2.replace(tzinfo=pytz.timezone('US/Eastern'),microsecond=0).isoformat()))
-        print(mini_batch[0][1])
+        # print(mini_batch[0][1])
         return mini_batch
 
 

@@ -10,13 +10,15 @@ import pytz
 
 
 class Binance:
-    def __init__(self):
+    def __init__(self,path=None):
+        self.path = path
         self.api = "https://api.binance.com/api/v1/klines?symbol={}&interval=1h&startTime={}&endTime={}"
         self.pairs,self.starts_ends = self.reader()
         self.request()
 
+
     def reader(self):
-        df = pd.read_csv(".\\list\\BinanceUS.csv", header = None, index_col = False)
+        df = pd.read_csv(self.path + "/list/BinanceUS.csv" if self.path else ".\\list\\BinanceUS.csv", header = None, index_col = False)
         pairs, starts, ends = df[0], df[1], df[2]
         pairs = [i.replace("/","") for i in pairs]
         starts_ends = [(self.utc2epoch(start),self.utc2epoch(end)) for (start,end) in zip(starts,ends)]
@@ -29,7 +31,7 @@ class Binance:
     def getUrl(self,pairs,starts_ends):
         urls = []
         for (x,y) in zip(pairs, starts_ends):
-            print(y)
+            # print(y)
             urls.append(self.api.format(x,y[0],y[1]))
         return urls
 
@@ -42,7 +44,7 @@ class Binance:
         return timestamp
 
     def request(self):
-        header =  {0:"Epoch",1:"Open", 2:"High", 3:"Low", 4:"Close", 5:"Volume", 6:"6",7:"7",8:"8",9:"9",10:"10",11:"11"}
+        header =  {0:"Epoch",1:"Open", 2:"High", 3:"Low", 4:"Close", 5:"Volume", 6:"Close time",7:"Quote asset volume",8:"Number of trades",9:"Taker buy base asset volume",10:"Taker buy quote asset volume",11:"Ignore"}
         urls = self.getUrl(pairs = self.pairs,starts_ends = self.starts_ends)
         for (url,pair) in zip(urls,self.pairs):
             re = requests.get(url)
@@ -54,6 +56,8 @@ class Binance:
     def writer(self, df, pair):
         df["Date (UTC)"] = (df["Epoch"]/1000).apply(lambda i : self.epoch2utc(i).date())
         df["Time (UTC)"] = (df["Epoch"]/1000).apply(lambda i : self.epoch2utc(i).time())
-        df.to_csv(".\\Binance\\{}.csv".format(pair), index = False)
+        df.to_csv(self.path + "/Binance/{}.csv".format(pair) if self.path else ".\\Binance\\{}.csv".format(pair), index = False)
 
-obj = Binance()
+
+if __name__ == '__main__':
+    obj = Binance()
