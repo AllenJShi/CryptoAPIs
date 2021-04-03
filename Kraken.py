@@ -47,12 +47,12 @@ class Kraken:
         return urls,pairs
 
 
-temp = Kraken()
-# df = temp.getAPI()
+
+def main():
+    temp = Kraken()
+    for (url,pair) in zip(temp.urls,temp.pairs):
+        dat = temp.getAPI(url,pair)
 
 
-# temp.writer(df)
-# temp.getUrls()
-
-for (url,pair) in zip(temp.urls,temp.pairs):
-    dat = temp.getAPI(url,pair)
+if __name__=="__main__":
+    main()

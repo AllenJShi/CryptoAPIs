@@ -102,7 +102,7 @@ class Coinbase:
 
 
 if __name__ == '__main__':
-    tmp = Coinbase()
+    Coinbase()
 
 
 # pairs = ["BCH-USD"]

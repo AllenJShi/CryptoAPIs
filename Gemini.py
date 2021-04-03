@@ -9,7 +9,8 @@ import os
 import pytz
 
 class Gemini:
-    def __init__(self):
+    def __init__(self,path=None):
+        self.path = path
         self.urls, self.pairs = self.getUrls()
 
     def epoch2utc(self, epoch):
@@ -25,7 +26,7 @@ class Gemini:
 
 
     def getUrls(self):
-        pair = pd.read_csv(".\\list\\Gemini.csv", header = None, index_col = False)
+        pair = pd.read_csv(self.path+"/list/Gemini.csv" if self.path else ".\\list\\Gemini.csv", header = None, index_col = False)
         # print(type(pair))
         pairs = [i.replace("/","") for i in pair[0]]
         # print(pair)
@@ -40,9 +41,15 @@ class Gemini:
         df["Date (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2utc(i).date())
         df["Time (UTC)"] = df["Epoch Time"].apply(lambda i : self.epoch2utc(i).time())
         df["Epoch Time"] = df["Epoch Time"].apply(lambda i : str(int(i)))
-        df.to_csv(".\\Gemini\\{}.csv".format(pair), index = False)
+        if not os.path.exists("Gemini"):
+            os.mkdir("Gemini")
+        df.to_csv(self.path+"/Gemini/{}.csv".format(pair) if self.path else ".\\Gemini\\{}.csv".format(pair), index = False)
 
-temp = Gemini()
 
-for (url,pair) in zip(temp.urls,temp.pairs):
-    dat = temp.getAPI(url,pair)
+def main():
+    temp = Gemini()
+    for (url,pair) in zip(temp.urls,temp.pairs):
+        dat = temp.getAPI(url,pair)
+
+if __name__ == '__main__':
+    main()

@@ -27,7 +27,7 @@ layout = [
         sg.Column(file_list_column),
         sg.Menu(menu_def,tearoff=False)
     ],
-    # [sg.Button("Execute")],
+    [sg.Button("Execute All")],
 ]
 
 window = sg.Window("Organizer", layout)
@@ -38,9 +38,8 @@ while True:
     if event == "Exit" or event == sg.WIN_CLOSED:
         break
 
-
     if event == 'About...':
-        sg.Popup('About this program','Version 1.1', 'By FLLP')
+        sg.Popup('About this program','Version 1.1', 'Developed by FLLP')
     elif event == 'Instruction':
         sg.Popup('Please select the destination folder and then left-click on the exchange name to trigger the program.')
     elif event == "-FOLDER-":
@@ -60,6 +59,9 @@ while True:
         
         else:
             print("Error")
+    elif event == "Execute All" and folder is not None:
+        Binance(path=folder)
+        Coinbase(path=folder)
     else:
         print("Folder is None")
 
