@@ -4,13 +4,14 @@ import requests
 from urllib.request import urlopen
 import json
 import csv
-
+import os
 """
 this a class for Bittrex API
 """
 
 class Bittrex:
-    def __init__(self):
+    def __init__(self,path = None):
+        self.path = path
         self.open = None
         self.high = None
         self.low = None
@@ -21,6 +22,7 @@ class Bittrex:
         self.urls, self.pairs = self.getUrls()
         self.market = None
         self.tickInterval = None
+        self.run()
 
 
     def getPrice(self,url):
@@ -43,13 +45,15 @@ class Bittrex:
         df["Date (UTC)"] = df["Time"].apply(lambda i: i.split("T")[0])
         df["Time (UTC)"] = df["Time"].apply(lambda i: i.split("T")[1])
         df = df.drop(["Time"], axis = 1)
-        df.to_csv('.\\Bittrex\\{}-{}.csv'.format(pair[0],pair[1]), index = False)
+        if not os.path.exists('Bittrex'):
+            os.makedirs('Bittrex')
+        df.to_csv(self.path + "/Bittrex/{}.csv".format(pair) if self.path else ".\\Bittrex\\{}.csv".format(pair), index = False)
 
     def getUrls(self):
         """
         return a list of URL
         """
-        pair = pd.read_csv(".\\list\\Bittrex.csv", header = None)
+        pair = pd.read_csv(self.path + "/list/Bittrex.csv" if self.path else ".\\list\\Bittrex.csv", header = None, index_col = False)
         urls = []
         pairs = []
         for i in range(len(pair)):
@@ -57,7 +61,19 @@ class Bittrex:
             pairs.append((pair[0][i],pair[1][i]))
         return urls,pairs
 
+
+    def run(self):
+        for (url,pair) in zip(self.urls, self.pairs):
+            result = self.getPrice(url)
+            try:
+                self.parser(result, pair)
+                print(pair)
+            except:
+                print(pair, "not found")
+                continue        
     
+
+
 def main():
     temp = Bittrex()
     for (url,pair) in zip(temp.urls, temp.pairs):

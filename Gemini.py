@@ -12,6 +12,7 @@ class Gemini:
     def __init__(self,path=None):
         self.path = path
         self.urls, self.pairs = self.getUrls()
+        self.run()
 
     def epoch2utc(self, epoch):
         return datetime.fromtimestamp(epoch/1000,pytz.timezone("UTC"))
@@ -45,6 +46,10 @@ class Gemini:
             os.mkdir("Gemini")
         df.to_csv(self.path+"/Gemini/{}.csv".format(pair) if self.path else ".\\Gemini\\{}.csv".format(pair), index = False)
 
+
+    def run(self):
+        for (url,pair) in zip(self.urls,self.pairs):
+            dat = self.getAPI(url,pair)        
 
 def main():
     temp = Gemini()

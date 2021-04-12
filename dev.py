@@ -1,5 +1,8 @@
 from Binance import Binance
 from Coinbase import Coinbase
+from Bittrex import Bittrex
+from Gemini import Gemini
+from Kraken import Kraken
 
 import PySimpleGUI as sg 
 import os.path
@@ -48,20 +51,39 @@ while True:
         action = values["-FILE LIST-"][0]
         print("Path: ", folder)
         if action == "Binance":
-            print("Execution Starts......")
+            print(f"{action} Execution Starts......")
             Binance(path = folder)
-            print("Execution Completed!")
+            print(f"{action} Execution Completed!")
         
         elif action == "Coinbase":
-            print("Execution Starts......")
+            print(f"{action} Execution Starts......")
             Coinbase(path = folder)
-            print("Execution Completed!")            
+            print(f"{action} Execution Completed!")            
         
+        elif action == "Bittrex":
+            print(f"{action} Execution Starts......")
+            Bittrex(path=folder)
+            print(f"{action} Execution Completed!")  
+
+        elif action == "Gemini":
+            print(f"{action} Execution Starts......")
+            Gemini(path=folder)
+            print(f"{action} Execution Completed!")  
+
+        elif action == "Kraken":
+            print(f"{action} Execution Starts......")
+            Kraken(path=folder)
+            print(f"{action} Execution Completed!")  
+
         else:
             print("Error")
     elif event == "Execute All" and folder is not None:
         Binance(path=folder)
         Coinbase(path=folder)
+        Bittrex(path=folder)
+        Gemini(path=folder)
+        Kraken(path=folder)
+
     else:
         print("Folder is None")
 
